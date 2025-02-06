@@ -23,9 +23,11 @@ export const IMAGE_VARIANTS = {
 
 export type ImageVariantType = keyof typeof IMAGE_VARIANTS;
 
+
 export interface ImageVariant {
     type:ImageVariant;
     price:number;
+    // ImageVariant: "SQUARE" | "WIDE" | "PORTRAIT";
     license:"personal" | "commercial";
 }
 export interface IProduct {
