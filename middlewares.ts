@@ -8,7 +8,12 @@ export default withAuth(
     {
         callbacks: {
             authorized:({token, req}) => {
-            const {pathname} = req.nextUrl
+            const {pathname} = req.nextUrl;
+            // Allow webhook endpoint
+            if (pathname.startsWith("/api/webhook")){
+                return true;
+            }
+
             if(
                 pathname.startsWith("/api/auth") ||
                 pathname === "/login" ||
@@ -16,9 +21,35 @@ export default withAuth(
             ){
                 return true;
             }
+            // Public routes
+            if (
+                pathname === "/" ||
+                pathname.startsWith("/api/products") ||
+                pathname.startsWith("/products")
+            ){
+                return true;
+            }
+            // Admin routes require admin role
+            if (pathname.startsWith("/admin")){
+                return token?.role === "admin";
+            }
+            // All other routes require authentication
+            return !! token;
             },
         },
     }
 );
 
-export const config = {matcher: ["/admin"]};
+export const config = {
+    matcher: [
+        // "/admin"
+    /*
+    * Match all request paths except
+    *- _next/static (static files)
+    *- _next/image (image optimization files)
+    *- favicon.ico(favicon file)
+    *- public folder
+    */
+    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
+    ],
+};
